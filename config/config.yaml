@@ -1,0 +1,7 @@
+---
+mqtt_info:
+  client_id: id-1001
+  username: admin
+  password: admin
+  broker: localhost
+  port: 1883

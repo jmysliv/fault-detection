@@ -11,19 +11,34 @@ sensors:
     ...
 ```
 
-Then for each possible fault in your system define his own 'Fault Card'.
+Then for each possible fault in your system define his own 'Fault Card' in `config/faults.yaml`.
 Each faults can have different symptoms and reasons. The format should be as follows:
 
 ```yaml
-fault_name:
-    - symptoms:
-        - symptom_id: number
-          value: low | high
-          temporal: periodic | progressive
-        - ...
-      reasons:
-        - name: name
-          action: action description
-        - ...
-    - ...
+faults:
+  - id: 1
+    name: "Fault name"
+    symptoms: 
+      - sensor_id: number
+        value: low | high
+        temporal: progressive | periodic
+      - ...
+    reasons:
+      - name: "Fault Reason"
+        action: "Recovery Action"
+      - ...
+  - ...
+```
+
+You have to provide proper config for mqtt connection as well. Put it in the `config/config.yaml`.
+The format should be as follows:
+
+
+```yaml
+mqtt_info:
+  client_id: id-1001
+  username: admin
+  password: admin
+  broker: localhost
+  port: 1883
 ```
