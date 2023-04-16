@@ -1,0 +1,15 @@
+sensors:
+  cpu_usage:
+    id: 1
+  memory_usage:
+    id: 2
+  frames_per_second:
+    id: 3
+  content_length_download:
+    id: 4
+  speed_download:
+    id: 5
+  objects_detected:
+    id: 6
+  cpu_temperature:
+    id: 7
