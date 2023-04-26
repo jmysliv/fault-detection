@@ -6,6 +6,7 @@ from .mqtt import MqttManager, MqttInfo
 if __name__ == "__main__":
     config_parser = Config()
     supervisor = Supervisor(config_parser)
+    # TODO add supervisor test
     file_path = 'config/config.yaml'
     with open(file_path, 'r') as stream:
         conf = yaml.safe_load(stream)

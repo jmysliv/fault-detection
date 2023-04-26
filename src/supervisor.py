@@ -51,19 +51,43 @@ class Supervisor:
         data: SensorData = json.loads(json_data)
         sensor = self.config.get_sensor(data['sensor_id'])
 
+        if sensor is None:
+            return
+
         check_alarm = topic in self.sensors_to_monitor
 
-        alarm = sensor.onDataReceived(data, check_alarm)
+        alarm = sensor.on_data_received(data, check_alarm)
 
         if alarm is not None:
-            # TODO find faults associated with this alarm
             possible_faults = [fault for fault in self.config.faults if fault.has_symptom(alarm.sensor_id, alarm.value)]
             print(possible_faults)
             if len(possible_faults) > 1:
                 sensors_to_check = list(set([ symptom.sensor_id for fault in possible_faults for symptom in fault.symptoms ]))
                 print(sensors_to_check)
-                pass
-                # TODO analyze data from sensors and find the fault
+                # creating a graph to find the fault
+                G = nx.DiGraph()
+                for id in sensors_to_check:
+                    sensor = self.config.get_sensor(id)
+                    G.add_node(f'S_{sensor.id}', label=sensor.name, id=sensor.id, color='blue')
+                # Add fault nodes to the graph
+                for fault in possible_faults:
+                    self.G.add_node(f'F_{fault.id}', color='red', label=fault.name)
+                    # Add edges between sensors and faults
+                    for symptom in fault.symptoms:
+                        sensor = self.config.get_sensor(symptom.sensor_id)
+                        probability = sensor.get_symptom_probability(symptom)
+                        self.G.add_edge(f'S_{symptom.sensor_id}', f'F_{fault.id}', weight=probability)
+
+                max_weight = 0
+                max_vertex = None
+                for vertex in G.nodes:
+                    weight = sum(G.out_degree(weight='weight')[vertex].values())
+                    if weight > max_weight:
+                        max_weight = weight
+                        max_vertex = vertex
+                print(max_vertex)
+                print(max_weight)
+                
             elif len(possible_faults) == 1:
                 print("FAULT DETECTED")
                 print(possible_faults[0].reasons)

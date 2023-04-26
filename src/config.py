@@ -2,9 +2,12 @@ import yaml
 from .sensor import Sensor
 from .symptom import Symptom
 from .fault import Fault
-
+from typing import List
 
 class Config:
+    faults: List[Fault]
+    sensor_list: List[Sensor]
+
     def __init__(self):
         # Load the YAML file
         with open('config/sensors.yaml', 'r') as f:
@@ -17,8 +20,10 @@ class Config:
         for sensor_name, sensor_data in sensors.items():
             # Get the ID of the sensor
             sensor_id = sensor_data.get('id', None)
+            sensor_low = sensor_data.get('low', None)
+            sensor_high = sensor_data.get('high', None)
             # Create a new Sensor object and add it to the list
-            sensor = Sensor(sensor_name, sensor_id)
+            sensor = Sensor(sensor_name, sensor_id, sensor_low, sensor_high)
             self.sensor_list.append(sensor)
 
         # get fault cards
@@ -46,7 +51,7 @@ class Config:
                 action_list.append(action)
             self.faults.append(Fault(id, fault_name, symptom_list, reason_list, action_list))
 
-    def get_sensor(self, sensor_id):
+    def get_sensor(self, sensor_id: int) -> Sensor | None:
         for sensor in self.sensor_list:
             if sensor.id == sensor_id:
                 return sensor

@@ -1,31 +1,53 @@
 from dataclasses import dataclass
-from enum import Enum
-
+from typing import List
+from .symptom import Symptom
 @dataclass
 class SensorData:
-    sensor_id: str
+    sensor_id: int
     timestamp: str
-    value: str # high or low
+    value: int
 
 @dataclass
 class Alarm:
-    sensor_id: str
-    value: Enum
+    sensor_id: int
+    value: str # high or low
 
+avg_length = 100
 class Sensor:
-    def __init__(self, name, id):
+    name: str
+    id: int
+    low: int
+    high: int
+    data: List[SensorData]
+    def __init__(self, name: str, id: int, low: int, high: int):
         self.name = name
         self.id = id
-        self.faults_associated = 0
+        self.low = low
+        self.high = high
         self.data = []
 
-    def onDataReceived(self, data: SensorData, checkForAnomaly: bool) -> Alarm | None:
+    def get_symptom_probability(self, symptom: Symptom) -> float:
+        if symptom.sensor_id != self.id:
+            return 0
+
+        avg_value = sum([d['value'] for d in self.data[-avg_length:]]) / avg_length
+        if symptom.value == 'low':
+            return 1 - (avg_value - self.low) / (self.high - self.low)
+        else:
+            return 1 - (self.high - avg_value) / (self.high - self.low)
+
+    def on_data_received(self, data: SensorData, checkForAnomaly: bool) -> Alarm | None:
         self.data.append({
             'timestamp': data['timestamp'],
             'value': data['value']
         })
 
-        if checkForAnomaly:
-            return Alarm(self.id, 'high')
-            # TODO Implement anomaly detection
+        if checkForAnomaly and len(self.data) > avg_length:
+            avg_value = sum([d['value'] for d in self.data[-avg_length:]]) / avg_length
+            print(avg_value)
+            if avg_value < self.low:
+                return Alarm(self.id, 'low')
+            elif avg_value > self.high:
+                return Alarm(self.id, 'high')
+            return None
 

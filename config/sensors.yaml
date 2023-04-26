@@ -1,15 +1,29 @@
 sensors:
   cpu_usage:
     id: 1
+    high: 80
+    low: 20
   memory_usage:
     id: 2
+    high: 80
+    low: 20
   frames_per_second:
     id: 3
+    high : 30
+    low: 10
   content_length_download:
     id: 4
+    high : 100000
+    low: 10000
   speed_download:
     id: 5
+    high : 100000
+    low: 10000
   objects_detected:
     id: 6
+    high: 10
+    low: 1
   cpu_temperature:
     id: 7
+    high: 80
+    low: 20
