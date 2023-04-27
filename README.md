@@ -8,6 +8,8 @@ Define set of sensor/metrics for which your system collects data in the `config/
 sensors:
     sensor_name:
         id: number
+        high: number
+        low: number
     ...
 ```
 
@@ -42,3 +44,15 @@ mqtt_info:
   broker: localhost
   port: 1883
 ```
+
+
+## Examples
+
+An example of knowledge graph:
+
+![knowledge graph](img/knowledge_graph.png)
+
+An example of fault detection graph:
+
+![fd graph](img/fd_graph.png)
+

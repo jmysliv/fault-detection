@@ -32,9 +32,9 @@ class Sensor:
 
         avg_value = sum([d['value'] for d in self.data[-avg_length:]]) / avg_length
         if symptom.value == 'low':
-            return 1 - (avg_value - self.low) / (self.high - self.low)
+            return min(1 - (avg_value - self.low) / (self.high - self.low), 1)
         else:
-            return 1 - (self.high - avg_value) / (self.high - self.low)
+            return min(1 - (self.high - avg_value) / (self.high - self.low), 1)
 
     def on_data_received(self, data: SensorData, checkForAnomaly: bool) -> Alarm | None:
         self.data.append({
