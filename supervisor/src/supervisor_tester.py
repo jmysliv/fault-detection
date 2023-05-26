@@ -14,14 +14,19 @@ class SupervisorTester:
         sensor_data = {}
         sensor_ids = []
         for sensor in self.supervisor.config.sensor_list:
-            std_dev = int((sensor.high - sensor.low) / 2)
-            mean = std_dev + random.randint(-std_dev, std_dev)
+            std_dev = max(int((sensor.high - sensor.low) / 2), 1)
+            mean = (sensor.high + sensor.low)/2 + random.randint(-std_dev, std_dev)
             data = np.random.normal(loc=mean, scale=(std_dev), size=size).astype(int)
             sensor_data[sensor.id] = data
             sensor_ids.append(sensor.id)
 
         # mock data for sensor 6
         sensor_data[6] = np.random.normal(loc=0.4, scale=5, size=size).astype(int)
+
+        #mock data for availability sensors
+        for id in range(8, 12):
+            sensor_data[id] = np.random.normal(loc=1, scale=1, size=size).astype(int)
+
         
         for i in range(size):
             for sensor_id in sensor_ids:

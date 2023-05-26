@@ -11,14 +11,6 @@ sensors:
     id: 3
     high : 30
     low: 10
-  content_length_download:
-    id: 4
-    high : 100000
-    low: 10000
-  speed_download:
-    id: 5
-    high : 100000
-    low: 10000
   objects_detected:
     id: 6
     high: 10
@@ -27,3 +19,19 @@ sensors:
     id: 7
     high: 80
     low: 20
+  ups_available:
+    id: 8
+    high: 1.5
+    low: 0.5
+  switch_available:
+    id: 9
+    high: 1.5
+    low: 0.5
+  camera_available:
+    id: 10
+    high: 1.5
+    low: 0.5
+  yolo_available:
+    id: 11
+    high: 1.5
+    low: 0.5

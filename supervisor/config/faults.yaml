@@ -1,0 +1,102 @@
+faults:
+  - id: 1
+    name: "Black stream"
+    symptoms: 
+      - sensor_id: 6
+        value: low
+        temporal: progressive
+      - sensor_id: 3
+        value: ok
+    reasons:
+      - name: "Camera is covered"
+        action: "Uncover the camera"
+  
+  # - id: 2
+  #   name: "Black stream"
+  #   symptoms:
+  #     - sensor_id: 6
+  #       value: low
+  #       temporal: periodic
+  #     - sensor_id: 3
+  #       value: ok
+  #   reasons:
+  #     - name: "Camera night vision failure"
+  #       action: "Check the night vision"
+
+  - id: 3
+    name: "Black stream"
+    symptoms:
+      - sensor_id: 6
+        value: low
+        temporal: progressive
+      - sensor_id: 3
+        value: low
+        temporal: progressive
+      - sensor_id: 10
+        value: low
+        temporal: progressive
+      - sensor_id: 11
+        value: ok
+    reasons:
+      - name: "Camera is offline"
+        action: "Check the network connection"
+  
+  - id: 4
+    name: "Cpu overheat"
+    symptoms:
+      - sensor_id: 7
+        value: high
+        temporal: progressive
+      - sensor_id: 1
+        value: ok
+    reasons:
+      - name: "Fan is turned off"
+        action: "Turn on the fan"
+      - name: "High room temparature"
+        action: "Cool down the room"
+
+  - id: 5
+    name: "Cpu overheat"
+    symptoms:
+      - sensor_id: 7
+        value: high
+        temporal: progressive
+      - sensor_id: 1
+        value: high
+        temporal: progressive
+    reasons:
+      - name: "Intense cpu usage"
+        action: "Scale up the resources"
+
+  - id: 6
+    name: "System failure"
+    symptoms:
+      - sensor_id: 11
+        value: low
+        temporal: progressive
+      - sensor_id: 8
+        value: ok
+      - sensor_id: 9
+        value: ok
+    reasons:
+      - name: "Yolo machine lost network connection"
+        action: "Check the network connection"
+
+  - id: 7
+    name: "System failure"
+    symptoms:
+      - sensor_id: 11
+        value: low
+        temporal: progressive
+      - sensor_id: 8
+        value: low
+        temporal: progressive
+      - sensor_id: 9
+        value: low
+        temporal: progressive
+      - sensor_id: 10
+        value: low
+        temporal: progressive
+    reasons:
+      - name: "Either switch or ups broke"
+        action: "Check the switch and ups"

@@ -33,22 +33,21 @@ class Supervisor:
      
 
     def prioritize_sensors(self):
-        connected_components = list(nx.connected_components(self.G))
-
-        connected_subgraphs = []
-        for component in connected_components:
-            if len(component) == 1:
-                continue
-            subgraph = self.G.subgraph(component)
-            connected_subgraphs.append(subgraph)
-
-        for subgraph in connected_subgraphs:
-            articulation_points = [ point for point in list(nx.articulation_points(subgraph)) if point[0] == 'S']
-            print(articulation_points)
-            self.sensors_to_monitor.extend(articulation_points)
-            # Draw the graph using Matplotlib
-            # nx.draw(subgraph, with_labels=True, node_color=[subgraph.nodes[node]['color'] if 'color' in subgraph.nodes[node] else 'blue' for node in subgraph.nodes])
-            # plt.show()
+        # set cover greedy algorithm
+        universe = set([f'F_{fault.id}' for fault in self.config.faults])
+        sensors = set([f'S_{sensor.id}' for sensor in self.config.sensor_list])
+        while len(universe) > 0:
+            best_sensor = None
+            best_sensor_faults = set()
+            for sensor in sensors:
+                sensor_faults = set(list(self.G.neighbors(sensor))).intersection(universe)
+                if len(sensor_faults) > len(best_sensor_faults):
+                    best_sensor = sensor
+                    best_sensor_faults = set(sensor_faults)
+            sensors.remove(best_sensor)
+            universe -= best_sensor_faults
+            self.sensors_to_monitor.append(best_sensor)
+        print(self.sensors_to_monitor)
     
     def handle_sensor_data(self, topic, json_data):
         data: SensorData = json.loads(json_data)
@@ -67,7 +66,6 @@ class Supervisor:
             possible_faults = [fault for fault in self.config.faults if fault.has_symptom(alarm.sensor_id, alarm.value)]
             if len(possible_faults) > 1:
                 sensors_to_check = list(set([ symptom.sensor_id for fault in possible_faults for symptom in fault.symptoms ]))
-                print(sensors_to_check)
                 # creating a graph to find the fault
                 G = nx.DiGraph()
                 for id in sensors_to_check:
@@ -79,7 +77,8 @@ class Supervisor:
                     # Add edges between sensors and faults
                     for symptom in fault.symptoms:
                         sensor = self.config.get_sensor(symptom.sensor_id)
-                        probability = round(sensor.get_symptom_probability(symptom), 2)
+                        # normalize the probability by the number of symptoms
+                        probability = round(sensor.get_symptom_probability(symptom) / len(fault.symptoms), 2)
                         G.add_edge(f'S_{symptom.sensor_id}', f'F_{fault.id}', weight=probability)
 
                 pos = nx.spring_layout(G)
@@ -91,9 +90,7 @@ class Supervisor:
                 max_weight = 0
                 max_vertex = None
                 for vertex in G.nodes:
-                    print(vertex)
                     weight = G.in_degree(vertex, weight='weight')
-                    print(weight)
                     if weight > max_weight:
                         max_weight = weight
                         max_vertex = vertex

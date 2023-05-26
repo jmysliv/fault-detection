@@ -7,7 +7,6 @@ from .supervisor_tester import SupervisorTester
 if __name__ == "__main__":
     config_parser = Config()
     supervisor = Supervisor(config_parser)
-    # TODO add supervisor test
     tester = SupervisorTester(supervisor)
     tester.test()
     # file_path = 'config/config.yaml'
