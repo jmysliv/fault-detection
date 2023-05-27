@@ -14,7 +14,8 @@ class Alarm:
     sensor_id: int
     value: str # high or low
 
-avg_length = 100
+max_avg_length = 100
+min_avg_length = 10
 
 def weighted_average(time_series):
     weights = np.arange(1, len(time_series) + 1)  # Increasing weights
@@ -38,10 +39,12 @@ class Sensor:
 
     def get_symptom_probability(self, symptom: Symptom) -> float:
         # refactor
-        if symptom.sensor_id != self.id or len(self.data) < avg_length:
+        if symptom.sensor_id != self.id or len(self.data) < min_avg_length:
             return 0
+        length = min(len(self.data), max_avg_length)
+
         
-        avg = weighted_average([d['value'] for d in self.data[-avg_length:]])
+        avg = weighted_average([d['value'] for d in self.data[-length:]])
         range = (self.high - self.low)
 
         if symptom.value == 'low':
@@ -60,8 +63,9 @@ class Sensor:
             'value': data['value']
         })
 
-        if checkForAnomaly and len(self.data) > avg_length:
-            avg_value = weighted_average([d['value'] for d in self.data[-avg_length:]])
+        if checkForAnomaly and len(self.data) > min_avg_length:
+            length = min(len(self.data), max_avg_length)
+            avg_value = weighted_average([d['value'] for d in self.data[-length:]])
             print(avg_value)
             if avg_value < self.low:
                 return Alarm(self.id, 'low')

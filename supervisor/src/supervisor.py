@@ -28,8 +28,8 @@ class Supervisor:
                 self.G.add_edge(f'S_{symptom.sensor_id}', f'F_{fault.id}')
 
         # Draw the graph using Matplotlib
-        nx.draw(self.G, with_labels=True, node_color=[self.G.nodes[node]['color'] if 'color' in self.G.nodes[node] else 'blue' for node in self.G.nodes])
-        plt.show()
+        # nx.draw(self.G, with_labels=True, node_color=[self.G.nodes[node]['color'] if 'color' in self.G.nodes[node] else 'blue' for node in self.G.nodes])
+        # plt.show()
      
 
     def prioritize_sensors(self):
@@ -51,6 +51,9 @@ class Supervisor:
     
     def handle_sensor_data(self, topic, json_data):
         data: SensorData = json.loads(json_data)
+        if isinstance(data, (str, int, float)):
+            return
+        print(data)
         sensor = self.config.get_sensor(data['sensor_id'])
 
         if sensor is None:
@@ -81,12 +84,12 @@ class Supervisor:
                         probability = round(sensor.get_symptom_probability(symptom) / len(fault.symptoms), 2)
                         G.add_edge(f'S_{symptom.sensor_id}', f'F_{fault.id}', weight=probability)
 
-                pos = nx.spring_layout(G)
-                weights = [G[u][v]['weight'] for u, v in G.edges()]
-                nx.draw(G, pos, with_labels=True, width=weights, node_color=[G.nodes[node]['color'] if 'color' in G.nodes[node] else 'blue' for node in G.nodes])
-                edge_labels = nx.get_edge_attributes(G, 'weight')
-                nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
-                plt.show()
+                # pos = nx.spring_layout(G)
+                # weights = [G[u][v]['weight'] for u, v in G.edges()]
+                # nx.draw(G, pos, with_labels=True, width=weights, node_color=[G.nodes[node]['color'] if 'color' in G.nodes[node] else 'blue' for node in G.nodes])
+                # edge_labels = nx.get_edge_attributes(G, 'weight')
+                # nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
+                # plt.show()
                 max_weight = 0
                 max_vertex = None
                 for vertex in G.nodes:

@@ -10,7 +10,7 @@ class Config:
 
     def __init__(self):
         # Load the YAML file
-        with open('config/sensors.yaml', 'r') as f:
+        with open('supervisor/config/sensors.yaml', 'r') as f:
             data = yaml.safe_load(f)
 
         sensors = data.get('sensors', {})
@@ -27,7 +27,7 @@ class Config:
             self.sensor_list.append(sensor)
 
         # get fault cards
-        with open('config/faults.yaml', 'r') as f:
+        with open('supervisor/config/faults.yaml', 'r') as f:
                 data = yaml.safe_load(f)
         faults = data.get('faults', {})
         self.faults = []
