@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  supervisor:
+    build: ./supervisor
+    network_mode: "host"
+    volumes:
+        - ./supervisor:/supervisor
+  network-availability-checker:
+    build: ./network-availability-checker
+    network_mode: "host"
+    volumes:
+        - ./network-availability-checker:/network-availability-checker
+

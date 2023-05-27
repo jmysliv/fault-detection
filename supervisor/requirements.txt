@@ -1,0 +1,4 @@
+paho-mqtt
+pyyaml
+numpy==1.21.5
+networkx
