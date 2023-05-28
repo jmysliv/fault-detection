@@ -4,7 +4,13 @@ import networkx as nx
 import json
 from .sensor import SensorData
 from typing import List
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import db
+from datetime import datetime
 
+cred = credentials.Certificate("supervisor/config/firebase-key.json")
+firebase_admin.initialize_app(cred, {'databaseURL': 'https://fault-detection-3a4cd-default-rtdb.europe-west1.firebasedatabase.app/' })
 class Supervisor:
     config: Config
     sensors_to_monitor: List[str]
@@ -33,6 +39,15 @@ class Supervisor:
      
 
     def prioritize_sensors(self):
+        # remove ok edges
+        ok_edges = []
+        for fault in self.config.faults:
+            # Add edges between sensors and faults
+            for symptom in fault.symptoms:
+                if symptom.value == 'ok':
+                    ok_edges.append((f'S_{symptom.sensor_id}', f'F_{fault.id}'))
+                    self.G.remove_edge(f'S_{symptom.sensor_id}', f'F_{fault.id}')
+
         # set cover greedy algorithm
         universe = set([f'F_{fault.id}' for fault in self.config.faults])
         sensors = set([f'S_{sensor.id}' for sensor in self.config.sensor_list])
@@ -48,6 +63,10 @@ class Supervisor:
             universe -= best_sensor_faults
             self.sensors_to_monitor.append(best_sensor)
         print(self.sensors_to_monitor)
+
+        # add ok edges back
+        for edge in ok_edges:
+            self.G.add_edge(edge[0], edge[1])
     
     def handle_sensor_data(self, topic, json_data):
         data: SensorData = json.loads(json_data)
@@ -62,9 +81,25 @@ class Supervisor:
         check_alarm = topic in self.sensors_to_monitor
 
         alarm = sensor.on_data_received(data, check_alarm)
+        if not check_alarm:
+            return
+        
+        timestamp = datetime.strptime(data['timestamp'], '%Y-%m-%d %H:%M:%S.%f')
+        # Calculate the milliseconds since epoch
+        milliseconds = int(timestamp.timestamp() * 1000)
+        id = str(sensor.id) + '_' + str(milliseconds)
+        event_ref = db.reference(f'events/sensors/{id}')
+        sensor_ref = db.reference(f'sensors/{sensor.id}')
 
 
         if alarm is not None:
+            event = {
+                'sensor_id': sensor.id,
+                'timestamp': data['timestamp'],
+                'state': 'ALARM'
+            }
+            event_ref.set(event)
+            sensor_ref.set(event)
             print(alarm)
             possible_faults = [fault for fault in self.config.faults if fault.has_symptom(alarm.sensor_id, alarm.value)]
             if len(possible_faults) > 1:
@@ -78,11 +113,27 @@ class Supervisor:
                 for fault in possible_faults:
                     G.add_node(f'F_{fault.id}', color='red', label=fault.name)
                     # Add edges between sensors and faults
+                    symptoms_probability = []
+                    overall_probability = 0
                     for symptom in fault.symptoms:
                         sensor = self.config.get_sensor(symptom.sensor_id)
                         # normalize the probability by the number of symptoms
                         probability = round(sensor.get_symptom_probability(symptom) / len(fault.symptoms), 2)
+                        symptoms_probability.append({
+                            'sensor_id': symptom.sensor_id,
+                            'probability': probability
+                        })
+                        overall_probability += probability
                         G.add_edge(f'S_{symptom.sensor_id}', f'F_{fault.id}', weight=probability)
+                    fault_event= {
+                        'alarm_trigger_id': sensor.id,
+                        'fault_id': fault.id,
+                        'timestamp': data['timestamp'],
+                        'symptoms': symptoms_probability,
+                        'probability': overall_probability
+                    }
+                    fault_ref = db.reference(f'events/faults/{fault.id}')
+                    fault_ref.set(fault_event)
 
                 # pos = nx.spring_layout(G)
                 # weights = [G[u][v]['weight'] for u, v in G.edges()]
@@ -105,4 +156,12 @@ class Supervisor:
                 print("FAULT DETECTED")
                 print(possible_faults[0].reasons)
                 print(possible_faults[0].actions)
+        else:
+            event = {
+                'sensor_id': data['sensor_id'],
+                'timestamp': data['timestamp'],
+                'state': 'OK'
+            }
+            event_ref.set(event)
+            sensor_ref.set(event)
 

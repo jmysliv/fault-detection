@@ -66,7 +66,7 @@ class Sensor:
         if checkForAnomaly and len(self.data) > min_avg_length:
             length = min(len(self.data), max_avg_length)
             avg_value = weighted_average([d['value'] for d in self.data[-length:]])
-            print(avg_value)
+            print('Anomaly check', self.id, avg_value)
             if avg_value < self.low:
                 return Alarm(self.id, 'low')
             elif avg_value > self.high:

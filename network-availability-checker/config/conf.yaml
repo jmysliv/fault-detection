@@ -10,6 +10,6 @@ devices:
   - id: 9
     ip: google.com
   - id: 10
-    ip: localhost
+    ip: 172.20.10.9
   - id: 11
-    ip: localhost
+    ip: 172.20.10.2

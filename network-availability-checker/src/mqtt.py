@@ -44,7 +44,8 @@ class MqttManager:
             result = self._mqtt_client.publish(topic, msg)
             status = result[0]
             if status == 0:
-                print(f"Send message to MQTT topic")
+                return True
             else:
                 print(f"Failed to send message to MQTT topic")
+                return False
      
