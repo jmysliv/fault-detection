@@ -1,7 +1,7 @@
 faults:
   - id: 1
     name: "Black stream"
-    symptoms: 
+    symptoms:
       - sensor_id: 6
         value: low
         temporal: progressive
@@ -10,18 +10,19 @@ faults:
     reasons:
       - name: "Camera is covered"
         action: "Uncover the camera"
-  
-  # - id: 2
-  #   name: "Black stream"
-  #   symptoms:
-  #     - sensor_id: 6
-  #       value: low
-  #       temporal: periodic
-  #     - sensor_id: 3
-  #       value: ok
-  #   reasons:
-  #     - name: "Camera night vision failure"
-  #       action: "Check the night vision"
+
+  - id: 2
+    name: "Slow stream"
+    symptoms:
+      - sensor_id: 3
+        value: low
+      - sensor_id: 11
+        value: ok
+      - sensor_id: 10
+        value: ok
+    reasons:
+      - name: "Network is slow"
+        action: "Check the network connection"
 
   - id: 3
     name: "Black stream"
@@ -40,7 +41,7 @@ faults:
     reasons:
       - name: "Camera is offline"
         action: "Check the network connection"
-  
+
   - id: 4
     name: "Cpu overheat"
     symptoms:

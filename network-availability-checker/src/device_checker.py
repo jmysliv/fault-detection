@@ -14,6 +14,7 @@ class DeviceChecker:
 
     def loop(self):
         while True:
+            # send check message each minute to check for timestamps gaps
             time.sleep(10)
             for device in self.devices:
                 delay = ping(device.ip)

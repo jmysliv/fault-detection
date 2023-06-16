@@ -2,14 +2,14 @@ mqtt_info:
   client_id: id-1003
   username: admin
   password: admin
-  broker: localhost
+  broker: 192.168.88.217
   port: 1883
 devices:
   - id: 8
-    ip: google.com
+    ip: 192.168.88.249
   - id: 9
-    ip: google.com
+    ip: 192.168.88.249
   - id: 10
-    ip: 172.20.10.9
+    ip: 192.168.88.214
   - id: 11
-    ip: 172.20.10.2
+    ip: 192.168.88.217

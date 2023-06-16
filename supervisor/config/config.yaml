@@ -3,5 +3,5 @@ mqtt_info:
   client_id: id-1001
   username: admin
   password: admin
-  broker: localhost
+  broker: 192.168.88.217
   port: 1883

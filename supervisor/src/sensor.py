@@ -38,6 +38,7 @@ class Sensor:
         self.data = []
 
     def get_symptom_probability(self, symptom: Symptom) -> float:
+        # TODO fill timestamps gaps
         # refactor
         if symptom.sensor_id != self.id or len(self.data) < min_avg_length:
             return 0
