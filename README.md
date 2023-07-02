@@ -20,10 +20,9 @@ Each faults can have different symptoms and reasons. The format should be as fol
 faults:
   - id: 1
     name: "Fault name"
-    symptoms: 
+    symptoms:
       - sensor_id: number
-        value: low | high
-        temporal: progressive | periodic
+        value: low | high | ok
       - ...
     reasons:
       - name: "Fault Reason"
@@ -35,7 +34,6 @@ faults:
 You have to provide proper config for mqtt connection as well. Put it in the `config/config.yaml`.
 The format should be as follows:
 
-
 ```yaml
 mqtt_info:
   client_id: id-1001
@@ -44,7 +42,6 @@ mqtt_info:
   broker: localhost
   port: 1883
 ```
-
 
 ## Examples
 
@@ -55,4 +52,3 @@ An example of knowledge graph:
 An example of fault detection graph:
 
 ![fd graph](img/fd_graph.png)
-
