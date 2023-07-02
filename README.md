@@ -18,15 +18,15 @@ Each faults can have different symptoms and reasons. The format should be as fol
 
 ```yaml
 faults:
-  - id: 1
-    name: "Fault name"
+  - id: number
+    name: string
     symptoms:
       - sensor_id: number
         value: low | high | ok
       - ...
     reasons:
-      - name: "Fault Reason"
-        action: "Recovery Action"
+      - name: string
+        action: string
       - ...
   - ...
 ```
